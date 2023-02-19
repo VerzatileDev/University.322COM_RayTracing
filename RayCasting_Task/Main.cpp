@@ -1,26 +1,31 @@
 #include "stdafx.h" // Pre-Compiled Library stuff.
-// Primatives.
+
+#pragma region Primatives.
 #include "Sphere.h"
 
-// After doing it again I stil have no idea what this is all about. 
-void step1()
-{
-	glm::vec3 v1(1, 2, 3);
-	glm::vec3 v2(3, 4, 5);
-	glm::vec3 v3 = v1 + v2;
-	std::cout << "v1 " << "[" << v1.x << " " << v1.y << " " << v1.z << "]" << std::endl;
-	std::cout << "v2 " << "[" << v2.x << " " << v2.y << " " << v2.z << "]" << std::endl;
-	std::cout << "v3 " << "[" << v3.x << " " << v3.y << " " << v3.z << "]" << std::endl;
-}
+// Radius Position colour
+Sphere sphereOne(4, glm::vec3(0, 0, -20), glm::vec3(1.00, 0.32, 0.36));
+Sphere sphereTwo(2, glm::vec3(5, -1, -15), glm::vec3(0.90, 0.76, 0.46)); // Yellow Sphere
+Sphere sphereThree(3, glm::vec3(5, 0, -25), glm::vec3(0.65, 0.77, 0.97)); // Yellow Sphere
+Sphere sphereFour(3, glm::vec3(-5.5, 0, -15), glm::vec3(0.90, 0.90, 0.90)); // Yellow Sphere
+
+#pragma endregion
+
+#pragma region References
+/* 
+* https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html
+*
+*/
+#pragma endregion
+
 
 int main()
 {
-	// Define Image Aspect Ratio
+	// Image Aspect Ratio
 	const int WIDTH = 640;
 	const int HEIGHT = 480;
 
-	// View Plane Array Defined Properties.
-	// See Reference material to these functions!
+	// View Properties.
 	float 
 	NormalizedPixelx, 
 	NormalizedPixely,
@@ -38,52 +43,87 @@ int main()
 		image[i] = new glm::vec3[HEIGHT];
 	}
 
+
+#pragma region Data storage
 	PictureAspectRatio = WIDTH / (float)HEIGHT;
-	TangentValue = tanf( PI / 180.0);
+	TangentValue = tanf(0.261799387); // 15 *  PI / 180 = 0.26179938779916666666666666666667
+	float t, min_t;
+	int pixelSelect; // Defines if pixel is empty or filled then checks color
+	glm::vec3 rayDirection(0, 0, 0);
+	glm::vec3 rayOrigin(0, 0, 10); // Camera Location
+	std::vector<float> t_arr;
+	std::vector<glm::vec3> color_array;
+#pragma endregion
 
 
 	for (int y = 0; y < HEIGHT; ++y)
 	{
 		for (int x = 0; x < WIDTH; ++x)
 		{
-			// Further change
-			/*if (x < 320)
-			{
-				image[x][y].x = 255;
-				image[x][y].y = 100;
-				image[x][y].z = 0;
-			}
-			else
-			{
-				image[x][y].x = 0;
-				image[x][y].y = 100;
-				image[x][y].z = 255;
-			}*/
+			t_arr.clear();
+			color_array.clear();
 
 			// Define correct pixel position using Screen Dimesions In the range of [0:1]
 			NormalizedPixelx = (x + 0.5) / (float)WIDTH;
 			NormalizedPixely = (y + 0.5) / (float)HEIGHT;
 
-			// Remap the coordinates
-			RemappedPixelx = 2 * NormalizedPixelx - 1.0;
-			RemappedPixelx *= PictureAspectRatio; //Par
-			// According to documentation. remappedx = (2* normalizedx - 1)
-			// remappedx * PaR
+			// Remap (x,y) coordinates
+			RemappedPixelx = 2 * NormalizedPixelx - 1.0; // remappedx = (2* normalizedx - 1)
+			RemappedPixelx *= PictureAspectRatio; // remappedx * PaR
 			
-
 			// Coordinate Range
-			// mappedy = 1.0 - 2 * normpixely
-			RemappedPixely = -1 * NormalizedPixely;
+			RemappedPixely = 1.0 - (2 * NormalizedPixely); // mappedy = 1.0 - 2 * normpixely
+
+			// Field of view
+			PCameraX = RemappedPixelx * TangentValue;
+			PCameraY = RemappedPixely * TangentValue;
+
+			rayDirection = glm::normalize(glm::vec3(PCameraX, PCameraY, -1.0f));
 			
 
-			// Define Field of view
-			PCameraX = RemappedPixelx * TangentValue / 2; // tangent(Alpha / 2 )
-			PCameraY = RemappedPixely * TangentValue / 2;
+			if (sphereOne.IntersectionOfSphere(rayOrigin, rayDirection, t))
+			{
+				t_arr.push_back(t);
+				color_array.push_back(sphereOne.GetColor());
+			}
 
-			// Tells us which colour is used within the pixel coordinate
-			image[x][y].x = PCameraX;
-			image[x][y].y = PCameraY;
-			image[x][y].z = -1.0;
+			if (sphereTwo.IntersectionOfSphere(rayOrigin, rayDirection, t))
+			{
+				t_arr.push_back(t);
+				color_array.push_back(sphereTwo.GetColor());
+			}
+			if (sphereThree.IntersectionOfSphere(rayOrigin, rayDirection, t))
+			{
+				t_arr.push_back(t);
+				color_array.push_back(sphereThree.GetColor());
+			}
+
+			if (sphereFour.IntersectionOfSphere(rayOrigin, rayDirection, t))
+			{
+				t_arr.push_back(t);
+				color_array.push_back(sphereFour.GetColor());
+			}
+
+
+			// Define Colour of background
+			if (t_arr.size() == 0)
+			{
+				image[x][y].x = 1.0;
+				image[x][y].y = 1.0;
+				image[x][y].z = 1.0;
+			}
+			else
+			{
+				min_t = 1000.0f;
+				pixelSelect = 0;
+				for (int i = 0; i < t_arr.size(); i++)
+				{
+					if (t_arr[i] < min_t) { pixelSelect = i; min_t = t_arr[i]; }
+				}
+				image[x][y].x = color_array[pixelSelect].x;
+				image[x][y].y = color_array[pixelSelect].y;
+				image[x][y].z = color_array[pixelSelect].z;
+			}
 		}
 	}
 
