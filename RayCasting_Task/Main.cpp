@@ -55,7 +55,7 @@ int main()
 	float t, min_t;
 	int pixelSelect; // Defines if pixel is empty or filled then checks color
 	glm::vec3 rayDirection(0, 0, 0);
-	glm::vec3 rayOrigin(0, 0, 10); // Camera Location
+	glm::vec3 rayOrigin(0, 0, 20); // Camera Location
 	std::vector<float> t_arr;
 	std::vector<glm::vec3> color_array;
 #pragma endregion
