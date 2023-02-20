@@ -1,6 +1,9 @@
 #include "Sphere.h"
 
 
+Sphere::Sphere()
+{}
+
 Sphere::Sphere(float Radius, glm::vec3 CenterPosition, glm::vec3 Color)
 {
 	cen = CenterPosition;

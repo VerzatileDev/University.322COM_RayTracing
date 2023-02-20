@@ -4,5 +4,6 @@
 class Shape
 {
 public:
-	virtual bool intersectSphere (glm::vec3 origin, glm::vec3 direction, float& t);
+	Shape();
+	virtual bool IntersectionOfSphere(glm::vec3 center, float radius, glm::vec3 origin, glm::vec3 direction, float& t);
 };

@@ -2,6 +2,7 @@
 
 #pragma region Primatives.
 #include "Sphere.h"
+#include "Shape.h"
 
 // Radius Position colour
 Sphere sphereOne(4, glm::vec3(0, 0, -20), glm::vec3(1.00, 0.32, 0.36));
@@ -58,6 +59,14 @@ int main()
 #pragma endregion
 
 
+	// Vritual Method Intance
+	Shape* ShapeSphere;
+	Sphere newSphereShape;
+	ShapeSphere = &newSphereShape;
+
+
+
+
 	for (int y = 0; y < HEIGHT; ++y)
 	{
 		for (int x = 0; x < WIDTH; ++x)
@@ -83,36 +92,36 @@ int main()
 			rayDirection = glm::normalize(glm::vec3(PCameraX, PCameraY, -1.0f));
 			
 
-			if (sphereOne.IntersectionOfSphere(sphereOne.GetPosition(), sphereOne.GetRadius() ,rayOrigin, rayDirection, t))
+			if (ShapeSphere->IntersectionOfSphere(sphereOne.GetPosition(), sphereOne.GetRadius(), rayOrigin, rayDirection, t))
 			{
 				t_arr.push_back(t);
-				color_array.push_back(sphereOne.GetColor());
+					color_array.push_back(sphereOne.GetColor());
 			}
 
-			if (sphereTwo.IntersectionOfSphere(sphereTwo.GetPosition(), sphereTwo.GetRadius(),rayOrigin, rayDirection, t))
+			if (ShapeSphere->IntersectionOfSphere(sphereTwo.GetPosition(), sphereTwo.GetRadius(), rayOrigin, rayDirection, t))
 			{
 				t_arr.push_back(t);
 				color_array.push_back(sphereTwo.GetColor());
 			}
-			if (sphereThree.IntersectionOfSphere(sphereThree.GetPosition(), sphereFour.GetRadius() ,rayOrigin, rayDirection, t))
+
+			if (ShapeSphere->IntersectionOfSphere(sphereThree.GetPosition(), sphereFour.GetRadius(), rayOrigin, rayDirection, t))
 			{
 				t_arr.push_back(t);
 				color_array.push_back(sphereThree.GetColor());
 			}
 
-			if (sphereFour.IntersectionOfSphere(sphereFour.GetPosition(), sphereFour.GetRadius(), rayOrigin, rayDirection, t))
+			if (ShapeSphere->IntersectionOfSphere(sphereFour.GetPosition(), sphereFour.GetRadius(), rayOrigin, rayDirection, t))
 			{
 				t_arr.push_back(t);
 				color_array.push_back(sphereFour.GetColor());
 			}
-
-			if (floorOne.IntersectionOfSphere(floorOne.GetPosition(), floorOne.GetRadius(), rayOrigin, rayDirection, t))
+			
+			if (ShapeSphere->IntersectionOfSphere(floorOne.GetPosition(), floorOne.GetRadius(), rayOrigin, rayDirection, t))
 			{
 				t_arr.push_back(t);
 				color_array.push_back(floorOne.GetColor()); // Dark gray for the floor.
 			}
-
-
+			
 			// Define Colour of background
 			if (t_arr.size() == 0)
 			{
@@ -134,8 +143,7 @@ int main()
 			}
 		}
 	}
-
-
+	
 	// Save result As a PPM image (Opened with Photoshop File)
 	// Replaced in Further Pushes!
 	std::ofstream ofs("./RenderedPicture.ppm", std::ios::out | std::ios::binary);
