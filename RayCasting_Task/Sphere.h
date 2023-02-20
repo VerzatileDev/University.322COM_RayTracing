@@ -1,23 +1,19 @@
 #pragma once
 #include "Shape.h"
-#include "include/glm/glm.hpp"
-#include <algorithm> // For Swap method
 
 class Sphere : public Shape
 {
 public:
 	Sphere(); // Default Contstructor for Virtual methods.
-	Sphere(float, glm::vec3, glm::vec3);
+	Sphere(float Radius, glm::vec3 CenterPosition, glm::vec3 Color);
 	~Sphere();
 
 	bool IntersectionOfSphere(glm::vec3 center, float radius, glm::vec3 origin, glm::vec3 direction, float& t);
-	glm::vec3 GetPosition(void);
-	glm::vec3 GetColor(void);
-	float GetRadius(void);
 	
-private:
-	glm::vec3 cen;
-	glm::vec3 col;
+	/* Deliver Outside of Class */	
+	glm::vec3 GetPosition(void), GetColor(void);
+	float GetRadius(void);
+protected:
+	glm::vec3 cen,col;
 	float r;
-
 };

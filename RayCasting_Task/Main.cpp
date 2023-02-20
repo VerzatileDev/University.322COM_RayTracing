@@ -2,6 +2,7 @@
 
 #pragma region Primatives.
 #include "Sphere.h"
+#include "Plane.h"
 #include "Shape.h"
 
 // Radius Position colour
@@ -9,15 +10,16 @@ Sphere sphereOne(4, glm::vec3(0, 0, -20), glm::vec3(1.00, 0.32, 0.36));
 Sphere sphereTwo(2, glm::vec3(5, -1, -15), glm::vec3(0.90, 0.76, 0.46)); // Yellow Sphere
 Sphere sphereThree(3, glm::vec3(5, 0, -25), glm::vec3(0.65, 0.77, 0.97)); // Light Blue
 Sphere sphereFour(3, glm::vec3(-5.5, 0, -15), glm::vec3(0.90, 0.90, 0.90)); // Light gray
+Plane plane(glm::vec3(0, -10004, -20), glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.0, 1.0, 0.0)); // Gray Floor
 
-Sphere floorOne(10000, glm::vec3(0, -10004, -20), glm::vec3(0.2, 0.2, 0.2)); // Yellow Sphere
 
 #pragma endregion
 
 #pragma region References
 /* 
 * https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html
-*
+* https://www.ibm.com/docs/en/zvm/7.2?topic=arithmetic-exponential-notation
+* 
 */
 #pragma endregion
 
@@ -59,11 +61,14 @@ int main()
 #pragma endregion
 
 
-	// Vritual Method Intance
+	// Virtual Method Intances
 	Shape* ShapeSphere;
 	Sphere newSphereShape;
 	ShapeSphere = &newSphereShape;
 
+	Shape* ShapePlane;
+	Plane newPlaneShape;
+	ShapePlane = &newPlaneShape;
 
 
 
@@ -116,10 +121,10 @@ int main()
 				color_array.push_back(sphereFour.GetColor());
 			}
 			
-			if (ShapeSphere->IntersectionOfSphere(floorOne.GetPosition(), floorOne.GetRadius(), rayOrigin, rayDirection, t))
+			if (ShapePlane->IntersectionOfPlane(plane.getCenter(), rayOrigin, rayDirection, plane.getNormal() , t))
 			{
 				t_arr.push_back(t);
-				color_array.push_back(floorOne.GetColor()); // Dark gray for the floor.
+				color_array.push_back(plane.getColor());
 			}
 			
 			// Define Colour of background

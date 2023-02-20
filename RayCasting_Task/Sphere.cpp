@@ -43,6 +43,7 @@ bool Sphere::IntersectionOfSphere(glm::vec3 center,float radius , glm::vec3 orig
 	return true;
 }
 
+#pragma region GetValue Data
 glm::vec3 Sphere::GetPosition(void)
 {
 	return cen;
@@ -57,3 +58,4 @@ float Sphere::GetRadius(void)
 {
 	return r;
 }
+#pragma endregion
