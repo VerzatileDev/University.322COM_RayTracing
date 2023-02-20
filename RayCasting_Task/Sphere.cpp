@@ -1,11 +1,9 @@
 #include "Sphere.h"
 
-Sphere::Sphere()
-{}
 
 Sphere::Sphere(float Radius, glm::vec3 CenterPosition, glm::vec3 Color)
 {
-	center = CenterPosition;
+	cen = CenterPosition;
 	r = Radius;
 	col = Color;
 }
@@ -13,7 +11,7 @@ Sphere::Sphere(float Radius, glm::vec3 CenterPosition, glm::vec3 Color)
 Sphere::~Sphere()
 {}
 
-bool Sphere::IntersectionOfSphere(glm::vec3 origin, glm::vec3 direction, float& t)
+bool Sphere::IntersectionOfSphere(glm::vec3 center,float radius , glm::vec3 origin, glm::vec3 direction, float& t)
 {
 	float t0, t1; // t If Ray Intersects to the pixel.
 
@@ -23,9 +21,9 @@ bool Sphere::IntersectionOfSphere(glm::vec3 origin, glm::vec3 direction, float& 
 	if (tca < 0) return false;
 
 	float d = dot(length, length) - tca * tca;
-	if (d > (r * r)) return false;
+	if (d > (radius * radius)) return false;
 
-	float thc = sqrt(r * r - d);
+	float thc = sqrt(radius * radius - d);
 	t0 = tca - thc;
 	t1 = tca + thc;
 
@@ -33,8 +31,8 @@ bool Sphere::IntersectionOfSphere(glm::vec3 origin, glm::vec3 direction, float& 
 
 	if (t0 < 0)
 	{
-		t0 = t1;
-		if (t0 < 0) return false;
+		t0 = t1; // if t0
+		if (t0 < 0) return false; // both negative
 	}
 
 	t = t0;
@@ -44,7 +42,7 @@ bool Sphere::IntersectionOfSphere(glm::vec3 origin, glm::vec3 direction, float& 
 
 glm::vec3 Sphere::GetPosition(void)
 {
-	return center;
+	return cen;
 }
 
 glm::vec3 Sphere::GetColor(void)

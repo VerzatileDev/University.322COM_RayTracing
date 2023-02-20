@@ -6,8 +6,10 @@
 // Radius Position colour
 Sphere sphereOne(4, glm::vec3(0, 0, -20), glm::vec3(1.00, 0.32, 0.36));
 Sphere sphereTwo(2, glm::vec3(5, -1, -15), glm::vec3(0.90, 0.76, 0.46)); // Yellow Sphere
-Sphere sphereThree(3, glm::vec3(5, 0, -25), glm::vec3(0.65, 0.77, 0.97)); // Yellow Sphere
-Sphere sphereFour(3, glm::vec3(-5.5, 0, -15), glm::vec3(0.90, 0.90, 0.90)); // Yellow Sphere
+Sphere sphereThree(3, glm::vec3(5, 0, -25), glm::vec3(0.65, 0.77, 0.97)); // Light Blue
+Sphere sphereFour(3, glm::vec3(-5.5, 0, -15), glm::vec3(0.90, 0.90, 0.90)); // Light gray
+
+Sphere floorOne(10000, glm::vec3(0, -10004, -20), glm::vec3(0.2, 0.2, 0.2)); // Yellow Sphere
 
 #pragma endregion
 
@@ -81,27 +83,33 @@ int main()
 			rayDirection = glm::normalize(glm::vec3(PCameraX, PCameraY, -1.0f));
 			
 
-			if (sphereOne.IntersectionOfSphere(rayOrigin, rayDirection, t))
+			if (sphereOne.IntersectionOfSphere(sphereOne.GetPosition(), sphereOne.GetRadius() ,rayOrigin, rayDirection, t))
 			{
 				t_arr.push_back(t);
 				color_array.push_back(sphereOne.GetColor());
 			}
 
-			if (sphereTwo.IntersectionOfSphere(rayOrigin, rayDirection, t))
+			if (sphereTwo.IntersectionOfSphere(sphereTwo.GetPosition(), sphereTwo.GetRadius(),rayOrigin, rayDirection, t))
 			{
 				t_arr.push_back(t);
 				color_array.push_back(sphereTwo.GetColor());
 			}
-			if (sphereThree.IntersectionOfSphere(rayOrigin, rayDirection, t))
+			if (sphereThree.IntersectionOfSphere(sphereThree.GetPosition(), sphereFour.GetRadius() ,rayOrigin, rayDirection, t))
 			{
 				t_arr.push_back(t);
 				color_array.push_back(sphereThree.GetColor());
 			}
 
-			if (sphereFour.IntersectionOfSphere(rayOrigin, rayDirection, t))
+			if (sphereFour.IntersectionOfSphere(sphereFour.GetPosition(), sphereFour.GetRadius(), rayOrigin, rayDirection, t))
 			{
 				t_arr.push_back(t);
 				color_array.push_back(sphereFour.GetColor());
+			}
+
+			if (floorOne.IntersectionOfSphere(floorOne.GetPosition(), floorOne.GetRadius(), rayOrigin, rayDirection, t))
+			{
+				t_arr.push_back(t);
+				color_array.push_back(floorOne.GetColor()); // Dark gray for the floor.
 			}
 
 
