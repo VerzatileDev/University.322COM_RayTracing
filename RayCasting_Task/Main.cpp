@@ -3,6 +3,7 @@
 #pragma region Primatives.
 #include "Sphere.h"
 #include "Plane.h"
+#include "Triangle.h"
 #include "Shape.h"
 
 // Radius Position colour
@@ -11,15 +12,16 @@ Sphere sphereTwo(2, glm::vec3(5, -1, -15), glm::vec3(0.90, 0.76, 0.46)); // Yell
 Sphere sphereThree(3, glm::vec3(5, 0, -25), glm::vec3(0.65, 0.77, 0.97)); // Light Blue
 Sphere sphereFour(3, glm::vec3(-5.5, 0, -15), glm::vec3(0.90, 0.90, 0.90)); // Light gray
 Plane plane(glm::vec3(0, -10004, -20), glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.0, 1.0, 0.0)); // Gray Floor
-
+Triangle triangle(glm::vec3(0.9, 1.0, 0.2), glm::vec3(0, 1, -2), glm::vec3(-1.9, -1, -2), glm::vec3(1.6, -0.5, -2));
 
 #pragma endregion
 
 #pragma region References
 /* 
-* https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html
-* https://www.ibm.com/docs/en/zvm/7.2?topic=arithmetic-exponential-notation
-* 
+* https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/definition-ray.html Ray Definition ( t , tMin, Tmax )
+* https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html Camera Rays / Intersections
+* https://www.ibm.com/docs/en/zvm/7.2?topic=arithmetic-exponential-notation Exponential Notation
+* http://freesourcecode.net/cprojects/109969/sourcecode/stdafx.h#.Y_LbcmnP3b2 Stdafx.h
 */
 #pragma endregion
 
@@ -41,7 +43,7 @@ int main()
 	PCameraX, 
 	PCameraY;
 
-	// Store/ create Image into mememory.
+	// Store/ create Image into memory.
 	glm::vec3** image = new glm::vec3 * [WIDTH];
 	for (int i = 0; i < WIDTH; i++)
 	{
@@ -54,7 +56,7 @@ int main()
 	TangentValue = tanf(0.261799387); // 15 *  PI / 180 = 0.26179938779916666666666666666667
 	float t, min_t;
 	int pixelSelect; // Defines if pixel is empty or filled then checks color
-	glm::vec3 rayDirection(0, 0, 0);
+	glm::vec3 rayDirection(0, 0, 0); // Must be Normalized
 	glm::vec3 rayOrigin(0, 0, 20); // Camera Location
 	std::vector<float> t_arr;
 	std::vector<glm::vec3> color_array;
@@ -70,6 +72,9 @@ int main()
 	Plane newPlaneShape;
 	ShapePlane = &newPlaneShape;
 
+	Shape* ShapeTriangle;
+	Triangle newTriangleShape;
+	ShapeTriangle = &newTriangleShape;
 
 
 	for (int y = 0; y < HEIGHT; ++y)
@@ -96,7 +101,9 @@ int main()
 
 			rayDirection = glm::normalize(glm::vec3(PCameraX, PCameraY, -1.0f));
 			
+			
 
+			/* ! INTERSECTIONS ! */
 			if (ShapeSphere->IntersectionOfSphere(sphereOne.GetPosition(), sphereOne.GetRadius(), rayOrigin, rayDirection, t))
 			{
 				t_arr.push_back(t);
@@ -126,8 +133,15 @@ int main()
 				t_arr.push_back(t);
 				color_array.push_back(plane.getColor());
 			}
+
+			if (ShapeTriangle->IntersectionOfTriangle(rayDirection, rayOrigin, triangle.GetVertexPoint(0), triangle.GetVertexPoint(1), triangle.GetVertexPoint(2), t)) // Do not Give vertexpoints values under 0 or over 2 :D Kills PC!
+			{
+				t_arr.push_back(t);
+				color_array.push_back(triangle.GetColor());
+			}
+
 			
-			// Define Colour of background
+			/* ! COLOR DEFINITIONS !*/
 			if (t_arr.size() == 0)
 			{
 				image[x][y].x = 1.0;
