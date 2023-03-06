@@ -34,7 +34,7 @@ bool Sphere::IntersectionOfSphere(glm::vec3 center,float radius , glm::vec3 orig
 
 	if (t0 < 0)
 	{
-		t0 = t1; // if t0
+		t0 = t1;
 		if (t0 < 0) return false; // both negative
 	}
 

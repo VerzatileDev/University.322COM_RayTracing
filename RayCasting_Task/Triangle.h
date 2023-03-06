@@ -1,12 +1,10 @@
 #pragma once
 #include "Shape.h"
 
-
-
 class Triangle : public Shape
 {
 public:
-	Triangle();   // For Virtual Method (Emppty)
+	Triangle();   // For Virtual Method (Empty)
 	~Triangle(); // For Clean-up
 	Triangle(glm::vec3 color, glm::vec3 point0, glm::vec3 point1, glm::vec3 point2); // Base Constructor
 	

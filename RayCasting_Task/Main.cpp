@@ -1,4 +1,4 @@
-#include "stdafx.h" // Pre-Compiled Library stuff.
+#include "stdafx.h" // Pre-Compile Library Headers
 
 #pragma region Primatives.
 #include "Sphere.h"
@@ -18,6 +18,7 @@ Triangle triangle(glm::vec3(0.9, 1.0, 0.2), glm::vec3(0, 1, -2), glm::vec3(-1.9,
 
 #pragma region References
 /* 
+* https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/mathematics-of-shading/mathematics-of-shading.html
 * https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/definition-ray.html Ray Definition ( t , tMin, Tmax )
 * https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html Camera Rays / Intersections
 * https://www.ibm.com/docs/en/zvm/7.2?topic=arithmetic-exponential-notation Exponential Notation
@@ -50,7 +51,6 @@ int main()
 		image[i] = new glm::vec3[HEIGHT];
 	}
 
-
 #pragma region Data storage
 	PictureAspectRatio = WIDTH / (float)HEIGHT;
 	TangentValue = tanf(0.261799387); // 15 *  PI / 180 = 0.26179938779916666666666666666667
@@ -63,7 +63,7 @@ int main()
 #pragma endregion
 
 
-	// Virtual Method Intances
+#pragma region Virtual Method Intances
 	Shape* ShapeSphere;
 	Sphere newSphereShape;
 	ShapeSphere = &newSphereShape;
@@ -75,7 +75,7 @@ int main()
 	Shape* ShapeTriangle;
 	Triangle newTriangleShape;
 	ShapeTriangle = &newTriangleShape;
-
+#pragma endregion
 
 	for (int y = 0; y < HEIGHT; ++y)
 	{
@@ -134,14 +134,15 @@ int main()
 				color_array.push_back(plane.getColor());
 			}
 
-			if (ShapeTriangle->IntersectionOfTriangle(rayDirection, rayOrigin, triangle.GetVertexPoint(0), triangle.GetVertexPoint(1), triangle.GetVertexPoint(2), t)) // Do not Give vertexpoints values under 0 or over 2 :D Kills PC!
+			// Do not Give vertexpoints values under 0 or over 2 :D Kills PC!
+			if (ShapeTriangle->IntersectionOfTriangle(rayDirection, rayOrigin, triangle.GetVertexPoint(0), triangle.GetVertexPoint(1), triangle.GetVertexPoint(2), t))
 			{
 				t_arr.push_back(t);
 				color_array.push_back(triangle.GetColor());
 			}
 
 			
-			/* ! COLOR DEFINITIONS !*/
+			/* ! COLOuR DEFINITIONS !*/
 			if (t_arr.size() == 0)
 			{
 				image[x][y].x = 1.0;

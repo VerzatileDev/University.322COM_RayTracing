@@ -4,7 +4,7 @@
 class Sphere : public Shape
 {
 public:
-	Sphere(); // Default Contstructor for Virtual methods.
+	Sphere();
 	Sphere(float Radius, glm::vec3 CenterPosition, glm::vec3 Color);
 	~Sphere();
 
