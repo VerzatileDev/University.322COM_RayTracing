@@ -20,17 +20,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Plane.cpp" />
-    <ClCompile Include="Shape.cpp" />
-    <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="Triangle.cpp" />
+    <ClCompile Include="primatives\Plane.cpp" />
+    <ClCompile Include="primatives\Shape.cpp" />
+    <ClCompile Include="primatives\Sphere.cpp" />
+    <ClCompile Include="primatives\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Plane.h" />
-    <ClInclude Include="Shape.h" />
-    <ClInclude Include="Sphere.h" />
+    <ClInclude Include="OBJloader.h" />
+    <ClInclude Include="primatives\Plane.h" />
+    <ClInclude Include="primatives\Shape.h" />
+    <ClInclude Include="primatives\Sphere.h" />
+    <ClInclude Include="primatives\Triangle.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Triangle.h" />
+    <ClInclude Include="vertex.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -92,6 +94,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <PublicIncludeDirectories>$(PublicIncludeDirectories)</PublicIncludeDirectories>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <IncludePath>C:\Users\Brian\Desktop\Year3Sem2\322COM_Advanced_graphics_programming\Deferral_Task1\Github_Project\9032499_322COM_Task1_Defferal\RayCasting_Task\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -132,7 +137,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Brian\Desktop\Year3Sem2\322COM_Advanced_graphics_programming\Deferral_Task1\Github_Project\9032499_322COM_Task1_Defferal\RayCasting_Task\include;C:\Users\Brian\Desktop\Year3Sem2\322COM_Advanced_graphics_programming\Deferral_Task1\Github_Project\9032499_322COM_Task1_Defferal\RayCasting_Task\Primatives;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Brian\Desktop\Year3Sem2\322COM_Advanced_graphics_programming\Deferral_Task1\Github_Project\9032499_322COM_Task1_Defferal\RayCasting_Task\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

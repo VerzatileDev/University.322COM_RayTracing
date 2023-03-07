@@ -1,10 +1,10 @@
 #include "stdafx.h" // Pre-Compile Library Headers
 
 #pragma region Primatives.
-#include "Sphere.h"
-#include "Plane.h"
-#include "Triangle.h"
-#include "Shape.h"
+#include "primatives/Sphere.h"
+#include "primatives/Plane.h"
+#include "primatives/Triangle.h"
+#include "primatives/Shape.h"
 
 // Radius Position colour
 Sphere sphereOne(4, glm::vec3(0, 0, -20), glm::vec3(1.00, 0.32, 0.36));
@@ -18,7 +18,7 @@ Triangle triangle(glm::vec3(0.9, 1.0, 0.2), glm::vec3(0, 1, -2), glm::vec3(-1.9,
 
 #pragma region References
 /* 
-* https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/mathematics-of-shading/mathematics-of-shading.html
+* https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/mathematics-of-shading/mathematics-of-shading.html Shading
 * https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/definition-ray.html Ray Definition ( t , tMin, Tmax )
 * https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html Camera Rays / Intersections
 * https://www.ibm.com/docs/en/zvm/7.2?topic=arithmetic-exponential-notation Exponential Notation
