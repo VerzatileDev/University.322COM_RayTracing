@@ -1,4 +1,5 @@
 #include "stdafx.h" // Pre-Compile Library Headers
+#include "SDL/SDL.h"
 
 #pragma region Primatives.
 #include "primatives/Sphere.h"
