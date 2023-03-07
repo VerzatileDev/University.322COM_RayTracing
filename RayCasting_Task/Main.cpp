@@ -1,5 +1,6 @@
 #include "stdafx.h" // Pre-Compile Library Headers
 #include "SDL/SDL.h"
+//#undef main // https://stackoverflow.com/questions/6847360/error-lnk2019-unresolved-external-symbol-main-referenced-in-function-tmainc Defining main in int argc ...  will get rid of the error!
 
 #pragma region Primatives.
 #include "primatives/Sphere.h"
@@ -13,7 +14,7 @@ Sphere sphereTwo(2, glm::vec3(5, -1, -15), glm::vec3(0.90, 0.76, 0.46)); // Yell
 Sphere sphereThree(3, glm::vec3(5, 0, -25), glm::vec3(0.65, 0.77, 0.97)); // Light Blue
 Sphere sphereFour(3, glm::vec3(-5.5, 0, -15), glm::vec3(0.90, 0.90, 0.90)); // Light gray
 Plane plane(glm::vec3(0, -10004, -20), glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.0, 1.0, 0.0)); // Gray Floor
-Triangle triangle(glm::vec3(0.9, 1.0, 0.2), glm::vec3(0, 1, -2), glm::vec3(-1.9, -1, -2), glm::vec3(1.6, -0.5, -2));
+Triangle triangle(glm::vec3(0.9, 1.0, 0.2), glm::vec3(0, 1, -2), glm::vec3(-1.9, -1, -2), glm::vec3(1.6, -0.5, -2)); // Color, point1, p2, p3
 
 #pragma endregion
 
@@ -27,13 +28,74 @@ Triangle triangle(glm::vec3(0.9, 1.0, 0.2), glm::vec3(0, 1, -2), glm::vec3(-1.9,
 */
 #pragma endregion
 
+// Image Aspect Ratio
+const int WIDTH = 640;
+const int HEIGHT = 480;
 
-int main()
+SDL_Event event; // Creates  New window event
+
+bool initSDL(SDL_Window*& window, SDL_Surface*& screenSurface)
 {
-	// Image Aspect Ratio
-	const int WIDTH = 640;
-	const int HEIGHT = 480;
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	{
+		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+		return false;
+	}
+	else
+	{
+		// Create Tabbed Window
+		window = SDL_CreateWindow("Ray-Tracing Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+		if (window == NULL)
+		{
+			std::cout << "SDL Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+			return false;
+		}
+		else
+		{
+			screenSurface = SDL_GetWindowSurface(window);
+			return true;
+		}
+	}
+};
 
+/* LOOKS FOR A call in closing window Event */
+void closeSDL(SDL_Window*& window)
+{
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+};
+
+// Convert Colours to an RBG variant (SDL)
+Uint32 convertColour(glm::vec3 colour)
+{
+	int tt;
+	Uint8 r, g, b;
+
+	tt = (int)(colour.r * 255);
+	if (tt <= 255) r = tt; else r = 255;
+	tt = (int)(colour.g * 255);
+	if (tt <= 255) g = tt; else g = 255;
+	tt = (int)(colour.b * 255);
+	if (tt <= 255) b = tt; else b = 255;
+
+	Uint32 rgb;
+
+	//check which order SDL is storing bytes
+	rgb = (r << 16) + (g << 8) + b;
+
+	return rgb;
+};
+
+// Displays pixel on the screen
+void PutPixel32_nolock(SDL_Surface*& surface, int x, int y, Uint32 colour)
+{
+	Uint8* pixel = (Uint8*)surface->pixels;
+	pixel += (y * surface->pitch) + (x * sizeof(Uint32));
+	*((Uint32*)pixel) = colour;
+};
+
+int main(int argc, char* args[])
+{
 	// View Properties.
 	float 
 	NormalizedPixelx, 
@@ -45,12 +107,18 @@ int main()
 	PCameraX, 
 	PCameraY;
 
+#pragma region SDL Setup
+	SDL_Window* window = NULL;
+	SDL_Surface* screenSurface = NULL;
+	if (!initSDL(window, screenSurface)) return -1;
+
 	// Store/ create Image into memory.
 	glm::vec3** image = new glm::vec3 * [WIDTH];
 	for (int i = 0; i < WIDTH; i++)
 	{
 		image[i] = new glm::vec3[HEIGHT];
 	}
+#pragma endregion
 
 #pragma region Data storage
 	PictureAspectRatio = WIDTH / (float)HEIGHT;
@@ -62,7 +130,6 @@ int main()
 	std::vector<float> t_arr;
 	std::vector<glm::vec3> color_array;
 #pragma endregion
-
 
 #pragma region Virtual Method Intances
 	Shape* ShapeSphere;
@@ -103,7 +170,6 @@ int main()
 			rayDirection = glm::normalize(glm::vec3(PCameraX, PCameraY, -1.0f));
 			
 			
-
 			/* ! INTERSECTIONS ! */
 			if (ShapeSphere->IntersectionOfSphere(sphereOne.GetPosition(), sphereOne.GetRadius(), rayOrigin, rayDirection, t))
 			{
@@ -143,12 +209,13 @@ int main()
 			}
 
 			
-			/* ! COLOuR DEFINITIONS !*/
+			/* ! COLOUR DEFINITIONS !*/
 			if (t_arr.size() == 0)
 			{
 				image[x][y].x = 1.0;
 				image[x][y].y = 1.0;
 				image[x][y].z = 1.0;
+				PutPixel32_nolock(screenSurface, x, y, convertColour(image[x][y]));
 			}
 			else
 			{
@@ -161,23 +228,25 @@ int main()
 				image[x][y].x = color_array[pixelSelect].x;
 				image[x][y].y = color_array[pixelSelect].y;
 				image[x][y].z = color_array[pixelSelect].z;
+				PutPixel32_nolock(screenSurface, x, y, convertColour(image[x][y]));
 			}
 		}
 	}
 	
-	// Save result As a PPM image (Opened with Photoshop File)
-	// Replaced in Further Pushes!
-	std::ofstream ofs("./RenderedPicture.ppm", std::ios::out | std::ios::binary);
-	ofs << "P6\n" << WIDTH << " " << HEIGHT << "\n255\n";
-	for (int y = 0; y < HEIGHT; ++y)
+	SDL_UpdateWindowSurface(window);
+	bool quit = false;
+	while (!quit)
 	{
-		for (int x = 0; x < WIDTH; ++x)
+		//Keyboard Input
+		while (SDL_PollEvent(&event) != 0)
 		{
-			ofs << (unsigned char)(std::min((float)1, (float)image[x][y].x) * 255) <<
-				(unsigned char)(std::min((float)1, (float)image[x][y].y) * 255) <<
-				(unsigned char)(std::min((float)1, (float)image[x][y].z) * 255);
+			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
+				quit = true;
+			}
 		}
 	}
-	ofs.close();
+
+	closeSDL(window);
+
 	return 0;
 }

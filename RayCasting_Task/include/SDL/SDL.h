@@ -29,7 +29,7 @@
 #ifndef _SDL_H
 #define _SDL_H
 
-#include "SDL_main.h"
+#include "SDL_main.h" // Has to be remove as it cannot find it (when main(int argc, char* args[])) Not defined
 #include "SDL_stdinc.h"
 #include "SDL_assert.h"
 #include "SDL_atomic.h"
