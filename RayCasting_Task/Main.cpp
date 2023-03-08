@@ -137,11 +137,12 @@ int main(int argc, char* args[])
 	std::vector<float> t_arr;
 	std::vector<glm::vec3> color_array;
 
-	glm::vec3 lower_left_corner(-2.0, -1.0, -1.0);
-	glm::vec3 horizontal(4.0, 0.0, 0.0);
-	glm::vec3 vertical(0.0, 2.0, 0.0);
-	glm::vec3 testvalue;
-	glm::vec3 finalValue;
+	// Properties for the Image Background
+	glm::vec3 upper_left_corner(2.0, 1.0, 1.0);
+	glm::vec3 horizontal(-4.0, -0.0, -0.0);
+	glm::vec3 vertical(-0.0, -2.0, -0.0);
+	glm::vec3 pointB;
+	glm::vec3 pointBColor;
 
 #pragma endregion
 
@@ -174,7 +175,7 @@ int main(int argc, char* args[])
 			RemappedPixelx = 2 * NormalizedPixelx - 1.0; // remappedx = (2* normalizedx - 1)
 			RemappedPixelx *= PictureAspectRatio; // remappedx * PaR
 			
-			// Coordinate Range
+			// Coordinate Range Y AXIS
 			RemappedPixely = 1.0 - (2 * NormalizedPixely); // mappedy = 1.0 - 2 * normpixely
 
 			// Field of view
@@ -208,14 +209,14 @@ int main(int argc, char* args[])
 				color_array.push_back(sphereFour.GetColor());
 			}
 			
-			if (ShapePlane->IntersectionOfPlane(plane.getCenter(), rayOrigin, rayDirection, plane.getNormal() , t))
+			if (ShapePlane->IntersectionOfPlane(plane.getCenter(), rayOrigin, rayDirection, plane.getNormal(), t))
 			{
 				t_arr.push_back(t);
 				color_array.push_back(plane.getColor());
 			}
+			
 
 			// Do not Give vertexpoints values under 0 or over 2 :D Kills PC!
-			
 			if (ShapeTriangle->IntersectionOfTriangle(rayDirection, rayOrigin, triangle.GetVertexPoint(0), triangle.GetVertexPoint(1), triangle.GetVertexPoint(2), t))
 			{
 				t_arr.push_back(t);
@@ -226,10 +227,10 @@ int main(int argc, char* args[])
 			// Better Background
 			// This Takes the Dimensions of the Screen and where The defined corners are
 			// and calculates the colours of each corner and how they should be displayed for Background
-			testvalue = lower_left_corner + NormalizedPixelx * horizontal + NormalizedPixely * vertical;
-			float test = 0.5 * (testvalue.y + 1.0);
-			float test1 = 1.0 - test;
-			finalValue = test1 * glm::vec3(1.0, 1.0, 1.0) + test * glm::vec3(0.5, 0.7, 1.0);
+			pointB = upper_left_corner + NormalizedPixelx * horizontal + NormalizedPixely * vertical;
+			float temporary = 0.5 * (pointB.y + 1.0);
+			float temporary1 = 1.0 - temporary;
+			pointBColor = temporary1 * glm::vec3(1.0, 1.0, 1.0) + temporary * glm::vec3(0.5, 0.7, 1.0);
 
 
 			/* ! COLOUR DEFINITIONS !*/
@@ -237,9 +238,9 @@ int main(int argc, char* args[])
 			{
 				// Purple
 				// Background
-				image[x][y].x = 1.0 * finalValue.x;
-				image[x][y].y = 1.0 * finalValue.y;
-				image[x][y].z = 1.0 * finalValue.z;
+				image[x][y].x = 1.0 * pointBColor.x;
+				image[x][y].y = 1.0 * pointBColor.y;
+				image[x][y].z = 1.0 * pointBColor.z;
 				PutPixel32_nolock(screenSurface, x, y, convertColour(image[x][y]));
 			}
 			else
