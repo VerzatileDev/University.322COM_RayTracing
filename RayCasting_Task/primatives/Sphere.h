@@ -9,6 +9,7 @@ public:
 	~Sphere();
 
 	bool IntersectionOfSphere(glm::vec3 center, float radius, glm::vec3 origin, glm::vec3 direction, float& t);
+
 	
 	/* Deliver Outside of Class */	
 	glm::vec3 GetPosition(void), GetColor(void);

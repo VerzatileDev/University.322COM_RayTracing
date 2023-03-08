@@ -1,6 +1,7 @@
 #include "stdafx.h" // Pre-Compile Library Headers
 #include "SDL/SDL.h"
 //#undef main // https://stackoverflow.com/questions/6847360/error-lnk2019-unresolved-external-symbol-main-referenced-in-function-tmainc Defining main in int argc ...  will get rid of the error!
+#include "OBJloader.h" // Yeah I'm going to give up here with OBJ loader
 
 #pragma region Primatives.
 #include "primatives/Sphere.h"
@@ -65,6 +66,7 @@ void closeSDL(SDL_Window*& window)
 	SDL_Quit();
 };
 
+
 // Convert Colours to an RBG variant (SDL)
 Uint32 convertColour(glm::vec3 colour)
 {
@@ -93,6 +95,11 @@ void PutPixel32_nolock(SDL_Surface*& surface, int x, int y, Uint32 colour)
 	pixel += (y * surface->pitch) + (x * sizeof(Uint32));
 	*((Uint32*)pixel) = colour;
 };
+
+//Object Load
+//const char* file_name = "objects/House.obj";
+//std::vector<VertexWithAll> vertices = loadOBJ(file_name);
+
 
 int main(int argc, char* args[])
 {
@@ -129,6 +136,13 @@ int main(int argc, char* args[])
 	glm::vec3 rayOrigin(0, 0, 20); // Camera Location
 	std::vector<float> t_arr;
 	std::vector<glm::vec3> color_array;
+
+	glm::vec3 lower_left_corner(-2.0, -1.0, -1.0);
+	glm::vec3 horizontal(4.0, 0.0, 0.0);
+	glm::vec3 vertical(0.0, 2.0, 0.0);
+	glm::vec3 testvalue;
+	glm::vec3 finalValue;
+
 #pragma endregion
 
 #pragma region Virtual Method Intances
@@ -153,8 +167,8 @@ int main(int argc, char* args[])
 			color_array.clear();
 
 			// Define correct pixel position using Screen Dimesions In the range of [0:1]
-			NormalizedPixelx = (x + 0.5) / (float)WIDTH;
-			NormalizedPixely = (y + 0.5) / (float)HEIGHT;
+			NormalizedPixelx = (x + 0.5) / (float)WIDTH; // u
+			NormalizedPixely = (y + 0.5) / (float)HEIGHT; // v
 
 			// Remap (x,y) coordinates
 			RemappedPixelx = 2 * NormalizedPixelx - 1.0; // remappedx = (2* normalizedx - 1)
@@ -168,7 +182,6 @@ int main(int argc, char* args[])
 			PCameraY = RemappedPixely * TangentValue;
 
 			rayDirection = glm::normalize(glm::vec3(PCameraX, PCameraY, -1.0f));
-			
 			
 			/* ! INTERSECTIONS ! */
 			if (ShapeSphere->IntersectionOfSphere(sphereOne.GetPosition(), sphereOne.GetRadius(), rayOrigin, rayDirection, t))
@@ -202,6 +215,7 @@ int main(int argc, char* args[])
 			}
 
 			// Do not Give vertexpoints values under 0 or over 2 :D Kills PC!
+			
 			if (ShapeTriangle->IntersectionOfTriangle(rayDirection, rayOrigin, triangle.GetVertexPoint(0), triangle.GetVertexPoint(1), triangle.GetVertexPoint(2), t))
 			{
 				t_arr.push_back(t);
@@ -209,12 +223,23 @@ int main(int argc, char* args[])
 			}
 
 			
+			// Better Background
+			// This Takes the Dimensions of the Screen and where The defined corners are
+			// and calculates the colours of each corner and how they should be displayed for Background
+			testvalue = lower_left_corner + NormalizedPixelx * horizontal + NormalizedPixely * vertical;
+			float test = 0.5 * (testvalue.y + 1.0);
+			float test1 = 1.0 - test;
+			finalValue = test1 * glm::vec3(1.0, 1.0, 1.0) + test * glm::vec3(0.5, 0.7, 1.0);
+
+
 			/* ! COLOUR DEFINITIONS !*/
 			if (t_arr.size() == 0)
 			{
-				image[x][y].x = 1.0;
-				image[x][y].y = 1.0;
-				image[x][y].z = 1.0;
+				// Purple
+				// Background
+				image[x][y].x = 1.0 * finalValue.x;
+				image[x][y].y = 1.0 * finalValue.y;
+				image[x][y].z = 1.0 * finalValue.z;
 				PutPixel32_nolock(screenSurface, x, y, convertColour(image[x][y]));
 			}
 			else

@@ -30,12 +30,12 @@ glm::vec3 Triangle::GetColor(void)
 
 bool Triangle::IntersectionOfTriangle(glm::vec3 direction, glm::vec3 origin, glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, float& t)
 {
-	//Calculates Planes normals
+	// Compute Planes normals
 	glm::vec3 v0v1 = v1 - v0;
 	glm::vec3 v0v2 = v2 - v0;
 	glm::vec3 N = cross(v0v1, v0v2);
 
-
+	// Barycentric coordinates) https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/barycentric-coordinates.html
 	u = (glm::dot((origin - v0), (glm::cross(direction, v0v2)))) / glm::dot(v0v1, glm::cross(direction, v0v2));
 	v = (glm::dot(direction, glm::cross(origin - v0, v0v1))) / glm::dot(v0v1, glm::cross(direction, v0v2));
 	w = 1 - u - v;
@@ -50,6 +50,7 @@ bool Triangle::IntersectionOfTriangle(glm::vec3 direction, glm::vec3 origin, glm
 		return false;
 	else
 	{
+		// Equation 3
 		// t = - N(A,B,C) * O + D / N(A,B,C) * R
 		t = -(glm::dot(N, origin) + d) / glm::dot(N, origin);
 
@@ -58,23 +59,24 @@ bool Triangle::IntersectionOfTriangle(glm::vec3 direction, glm::vec3 origin, glm
 		glm::vec3 P = origin + t * direction; // Hit Dedection towards the Plane
 		glm::vec3 C;
 
-		// Case 1
+		//https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/ray-triangle-intersection-geometric-solution.html
+		// Case 1 (Edge 0)
 		glm::vec3 edge0 = v1 - v0;
 		glm::vec3 vp0 = P - v0;
 		C = cross(edge0, vp0);
 		if (dot(N, C) < 0) return false;
 
-		// Case 2
+		// Case 2 (Edge 1)
 		glm::vec3 edge1 = v2 - v1;
 		glm::vec3 vp1 = P - v1;
 		C = cross(edge1, vp1);
 		if (dot(N, C) < 0) return false;
 
-		// Case 3
+		// Case 3 (Edge 2)
 		glm::vec3 edge2 = v0 - v2;
 		glm::vec3 vp2 = P - v2;
 		C = cross(edge1, vp2);
 		if (dot(N, C) < 0) return false;
-		return true;
+		return true; // p is inside the triangle (Ray hits the triangle)
 	}
 }

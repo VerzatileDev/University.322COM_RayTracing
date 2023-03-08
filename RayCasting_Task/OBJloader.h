@@ -8,10 +8,10 @@
 #include <algorithm>
 
 //OPENGL MATH LIBS
-#include "include/glm/gtc/matrix_transform.hpp"
-#include "include/glm/gtc/type_ptr.hpp"
-#include "include/glm/gtc/matrix_inverse.hpp"
-#include "include/GLEWLib/GL/glew.h"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_inverse.hpp"
+#include "GLEWLib/GL/glew.h"
 
 //MINE LIBS
 #include "Vertex.h"
@@ -87,7 +87,7 @@ static std::vector<VertexWithAll> loadOBJ(const char* file_name)
 			vertex_textcoords.push_back(temp_vec2);
 		}
 
-		else if (prefix == "vn")//VERTEX POSITION
+		else if (prefix == "vn")//VERTEX Normal POSITION
 		{
 			ss >> temp_vec3.x >> temp_vec3.y >> temp_vec3.z;
 			vertex_normals.push_back(temp_vec3);
