@@ -14,8 +14,8 @@ Sphere sphereOne(4, glm::vec3(0, 0, -20), glm::vec3(1.00, 0.32, 0.36));
 Sphere sphereTwo(2, glm::vec3(5, -1, -15), glm::vec3(0.90, 0.76, 0.46)); // Yellow Sphere
 Sphere sphereThree(3, glm::vec3(5, 0, -25), glm::vec3(0.65, 0.77, 0.97)); // Light Blue
 Sphere sphereFour(3, glm::vec3(-5.5, 0, -15), glm::vec3(0.90, 0.90, 0.90)); // Light gray
-Plane plane(glm::vec3(0, -10004, -20), glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.0, 1.0, 0.0)); // Gray Floor
-Triangle triangle(glm::vec3(0.9, 1.0, 0.2), glm::vec3(0, 1, -2), glm::vec3(-1.9, -1, -2), glm::vec3(1.6, -0.5, -2)); // Color, point1, p2, p3
+Plane plane(glm::vec3(0, -10004, -20), glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.0, 1.0, 0.0)); // Gray Floor             Normal 1
+Triangle triangle(glm::vec3(0.9, 1.0, 0.2), glm::vec3(0, 1, -2), glm::vec3(-1.9, -1, -2), glm::vec3(1.6, -0.5, -2), glm::vec3(0.0, 0.6, 1.0), glm::vec3(0.0, 0.6, 1.0), glm::vec3(0.4, -0.4, 1.0)); // Color, point1, p2, p3
 
 #pragma endregion
 
@@ -117,14 +117,20 @@ int main(int argc, char* args[])
 #pragma region SDL Setup
 	SDL_Window* window = NULL;
 	SDL_Surface* screenSurface = NULL;
-	if (!initSDL(window, screenSurface)) return -1;
-
+	if (!initSDL(window, screenSurface))
+	{
+		std::cout << " Failed To Initialize SDL Window " << std::endl;
+		return -1;
+	}
+	
 	// Store/ create Image into memory.
 	glm::vec3** image = new glm::vec3 * [WIDTH];
 	for (int i = 0; i < WIDTH; i++)
 	{
 		image[i] = new glm::vec3[HEIGHT];
 	}
+	std::cout << " The Application Dimensions are " << WIDTH << " By " << HEIGHT << std::endl;
+	std::cout << " Press ' Esc ' to Close " << std::endl;
 #pragma endregion
 
 #pragma region Data storage
@@ -143,6 +149,12 @@ int main(int argc, char* args[])
 	glm::vec3 vertical(-0.0, -2.0, -0.0);
 	glm::vec3 pointB;
 	glm::vec3 pointBColor;
+
+	// Shading Properties I guess
+	glm::vec3 tNormvec, IntPt;
+	float ColValue;
+	float ambientIntesity(0.1);
+	glm::vec3 lightPt(0.0f, 20.0f, 0.0f);
 
 #pragma endregion
 
@@ -185,27 +197,28 @@ int main(int argc, char* args[])
 			rayDirection = glm::normalize(glm::vec3(PCameraX, PCameraY, -1.0f));
 			
 			/* ! INTERSECTIONS ! */
-			if (ShapeSphere->IntersectionOfSphere(sphereOne.GetPosition(), sphereOne.GetRadius(), rayOrigin, rayDirection, t))
+			if (ShapeSphere->IntersectionOfSphere(sphereOne.GetPosition(), sphereOne.GetRadius(), rayOrigin, rayDirection, t, IntPt))
 			{
 				t_arr.push_back(t);
-					color_array.push_back(sphereOne.GetColor());
+				//ShapeSphere->ComputeColor(ambientIntesity, IntPt, lightPt, rayDirection, ColValue);
+				color_array.push_back(sphereOne.GetColor());
 			}
-
-			if (ShapeSphere->IntersectionOfSphere(sphereTwo.GetPosition(), sphereTwo.GetRadius(), rayOrigin, rayDirection, t))
+			if (ShapeSphere->IntersectionOfSphere(sphereTwo.GetPosition(), sphereTwo.GetRadius(), rayOrigin, rayDirection, t, IntPt))
 			{
 				t_arr.push_back(t);
+				//ShapeSphere->ComputeColor(ambientIntesity, IntPt, lightPt, rayDirection, ColValue);
 				color_array.push_back(sphereTwo.GetColor());
 			}
-
-			if (ShapeSphere->IntersectionOfSphere(sphereThree.GetPosition(), sphereFour.GetRadius(), rayOrigin, rayDirection, t))
+			if (ShapeSphere->IntersectionOfSphere(sphereThree.GetPosition(), sphereThree.GetRadius(), rayOrigin, rayDirection, t, IntPt))
 			{
 				t_arr.push_back(t);
+				//ShapeSphere->ComputeColor(ambientIntesity, IntPt, lightPt, rayDirection, ColValue);
 				color_array.push_back(sphereThree.GetColor());
 			}
-
-			if (ShapeSphere->IntersectionOfSphere(sphereFour.GetPosition(), sphereFour.GetRadius(), rayOrigin, rayDirection, t))
+			if (ShapeSphere->IntersectionOfSphere(sphereFour.GetPosition(), sphereFour.GetRadius(), rayOrigin, rayDirection, t, IntPt))
 			{
 				t_arr.push_back(t);
+				//ShapeSphere->ComputeColor(ambientIntesity, IntPt, lightPt, rayDirection, ColValue);
 				color_array.push_back(sphereFour.GetColor());
 			}
 			
@@ -214,24 +227,25 @@ int main(int argc, char* args[])
 				t_arr.push_back(t);
 				color_array.push_back(plane.getColor());
 			}
-			
 
 			// Do not Give vertexpoints values under 0 or over 2 :D Kills PC!
-			if (ShapeTriangle->IntersectionOfTriangle(rayDirection, rayOrigin, triangle.GetVertexPoint(0), triangle.GetVertexPoint(1), triangle.GetVertexPoint(2), t))
+			if (ShapeTriangle->IntersectionOfTriangle(rayDirection, rayOrigin, triangle.GetVertexPoint(0), triangle.GetVertexPoint(1), triangle.GetVertexPoint(2), t, IntPt, tNormvec))
 			{
 				t_arr.push_back(t);
+				
+				ShapeTriangle->ComputeTriangleColor(ambientIntesity, IntPt, lightPt, rayDirection, tNormvec, ColValue);
 				color_array.push_back(triangle.GetColor());
+			//	color_array.push_back(triangle.GetColor() );
 			}
 
 			
-			// Better Background
-			// This Takes the Dimensions of the Screen and where The defined corners are
-			// and calculates the colours of each corner and how they should be displayed for Background
+#pragma region Background Specificaitons
+			// Based on the Direction, define the color
 			pointB = upper_left_corner + NormalizedPixelx * horizontal + NormalizedPixely * vertical;
-			float temporary = 0.5 * (pointB.y + 1.0);
+			float temporary = 0.9 * (pointB.y + 1.0);
 			float temporary1 = 1.0 - temporary;
 			pointBColor = temporary1 * glm::vec3(1.0, 1.0, 1.0) + temporary * glm::vec3(0.5, 0.7, 1.0);
-
+#pragma endregion
 
 			/* ! COLOUR DEFINITIONS !*/
 			if (t_arr.size() == 0)
@@ -251,9 +265,18 @@ int main(int argc, char* args[])
 				{
 					if (t_arr[i] < min_t) { pixelSelect = i; min_t = t_arr[i]; }
 				}
-				image[x][y].x = color_array[pixelSelect].x;
-				image[x][y].y = color_array[pixelSelect].y;
-				image[x][y].z = color_array[pixelSelect].z;
+				glm::vec3 IntPt = rayOrigin + min_t * rayDirection;
+				glm::vec3 normal = glm::normalize(IntPt - sphereOne.GetPosition());
+				glm::vec3 lightDirection = glm::normalize(lightPt - IntPt);
+				float diffuse = glm::max(glm::dot(normal, lightDirection), 0.0f);
+				glm::vec3 ambientIntesity(0.1, 0.1, 0.1);
+
+				glm::vec3 ambientColor = ambientIntesity * color_array[pixelSelect];
+				glm::vec3 diffuseColor = diffuse * color_array[pixelSelect];
+				glm::vec3 specularColor = glm::vec3(0.0f); 
+				glm::vec3 finalColor = ambientColor + diffuseColor + specularColor;
+
+				image[x][y] = finalColor;
 				PutPixel32_nolock(screenSurface, x, y, convertColour(image[x][y]));
 			}
 		}
