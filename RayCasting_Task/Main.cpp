@@ -19,16 +19,6 @@ Triangle triangle(glm::vec3(0.9, 1.0, 0.2), glm::vec3(0, 1, -2), glm::vec3(-1.9,
 
 #pragma endregion
 
-#pragma region References
-/* 
-* https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/mathematics-of-shading/mathematics-of-shading.html Shading
-* https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/definition-ray.html Ray Definition ( t , tMin, Tmax )
-* https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html Camera Rays / Intersections
-* https://www.ibm.com/docs/en/zvm/7.2?topic=arithmetic-exponential-notation Exponential Notation
-* http://freesourcecode.net/cprojects/109969/sourcecode/stdafx.h#.Y_LbcmnP3b2 Stdafx.h
-*/
-#pragma endregion
-
 // Image Aspect Ratio
 const int WIDTH = 640;
 const int HEIGHT = 480;
@@ -147,16 +137,16 @@ int main(int argc, char* args[])
 	glm::vec3 tempPos;
 
 	// Properties for the Image Background
-	glm::vec3 upper_left_corner(2.0, 1.0, 1.0);
+	glm::vec3 upper_left_corner(2.0, 1.0, 1.0); // Of the Screen
 	glm::vec3 horizontal(-4.0, -0.0, -0.0);
 	glm::vec3 vertical(-0.0, -2.0, -0.0);
 	glm::vec3 pointB;
 	glm::vec3 pointBColor;
 
-	// Shading Properties I guess
+	// Shading Properties
 	glm::vec3 tNormvec, IntPt;
 	float ColValue;
-	float ambientIntesity(0.1);
+	glm::vec3 ambientIntesity(0.1, 0.1, 0.1);
 	glm::vec3 lightPt(0.0f, 20.0f, 0.0f);
 	glm::vec3 finalColor(1.0f, 1.0f, 1.0f);
 #pragma endregion
@@ -170,6 +160,7 @@ int main(int argc, char* args[])
 	shapes[0] = &newSphereShape;
 	shapes[1] = &newPlaneShape;
 	shapes[2] = &newTriangleShape;
+
 
 #pragma endregion
 
@@ -201,7 +192,7 @@ int main(int argc, char* args[])
 			if (shapes[0]->IntersectionOfSphere(sphereOne.GetPosition(), sphereOne.GetRadius(), rayOrigin, rayDirection, t, IntPt))
 			{
 				t_arr.push_back(t);
-				//ShapeSphere->ComputeColor(ambientIntesity, IntPt, lightPt, rayDirection, ColValue);
+				//ShapeSphere->ComputeColor(ambientIntesity, IntPt, lightPt, rayDirection, ColValue); // Official way of doing Shading (Doesn't work)
 				IntPt_array.push_back(IntPt);
 				CenPT_array.push_back(sphereOne.GetPosition());
 				color_array.push_back(sphereOne.GetColor());
@@ -228,24 +219,24 @@ int main(int argc, char* args[])
 				color_array.push_back(sphereFour.GetColor());
 			}
 			
-			//if (ShapePlane->IntersectionOfPlane(plane.getCenter(), rayOrigin, rayDirection, plane.getNormal(), t))
-			//{
-			//	t_arr.push_back(t);
-			//	color_array.push_back(plane.getColor());
-			//}
+			if (shapes[1]->IntersectionOfPlane(plane.getCenter(), rayOrigin, rayDirection, plane.getNormal(), t))
+			{
+				t_arr.push_back(t);
+				color_array.push_back(plane.getColor());
+			}
 		
-			// Do not Give vertexpoints values under 0 or over 2 :D Kills PC!
-			//if (ShapeTriangle->IntersectionOfTriangle(rayDirection, rayOrigin, triangle.GetVertexPoint(0), triangle.GetVertexPoint(1), triangle.GetVertexPoint(2), t, IntPt, tNormvec))
-			//{
-			//	t_arr.push_back(t);
+			// Do not Give vertexpoints values under 0 or over 2 !!
+			if (shapes[2]->IntersectionOfTriangle(rayDirection, rayOrigin, triangle.GetVertexPoint(0), triangle.GetVertexPoint(1), triangle.GetVertexPoint(2), t, IntPt, tNormvec))
+			{
+				t_arr.push_back(t);
 				
-				//ShapeTriangle->ComputeTriangleColor(ambientIntesity, IntPt, lightPt, rayDirection, tNormvec, ColValue);
-			//	IntPt_array.push_back(IntPt);
-			//	color_array.push_back(triangle.GetColor());
-			//}
+				//  ShapeTriangle->ComputeTriangleColor(ambientIntesity, IntPt, lightPt, rayDirection, tNormvec, ColValue);
+				//	IntPt_array.push_back(IntPt);
+				color_array.push_back(triangle.GetColor());
+			}
 
 			
-#pragma region Background Specificaitons
+#pragma region Background Calculation Specificaitons
 			// Based on the Direction, define the color
 			pointB = upper_left_corner + NormalizedPixelx * horizontal + NormalizedPixely * vertical;
 			float temporary = 0.9 * (pointB.y + 1.0);
@@ -275,23 +266,23 @@ int main(int argc, char* args[])
 						min_t = t_arr[i]; 
 					}
 				}
-				//std::cout << pixelSelect << std::endl;
-				
+				//std::cout << pixelSelect << std::endl; // Debug
 				//IntPt = IntPt_array[pixelSelect];
 				//tempPos = CenPT_array[pixelSelect];
 				
 				
-				glm::vec3 IntPt = rayOrigin + min_t * rayDirection;
-				glm::vec3 normal = glm::normalize(IntPt - sphereOne.GetPosition());
-				glm::vec3 lightDirection = glm::normalize(lightPt - IntPt);
-				float diffuse = glm::max(glm::dot(normal, lightDirection), 0.0f);
-				glm::vec3 ambientIntesity(0.1, 0.1, 0.1);
-
-				glm::vec3 ambientColor = ambientIntesity * color_array[pixelSelect];
+				IntPt = rayOrigin + min_t * rayDirection;
+				glm::vec3 normal = glm::normalize(IntPt - sphereOne.GetPosition()); // HardCoded for only one Sphere Location
+				glm::vec3 lightDirection = glm::normalize(lightPt - IntPt); // Light point - Intersection Point. (Normalized)
+				float diffuse = glm::max(glm::dot(normal, lightDirection), 0.0f); // Diffuse Lighting
+				// Ambient Intensity in Properties!
+				glm::vec3 ambientColor = ambientIntesity * color_array[pixelSelect]; // Applies colors from objects.
 				glm::vec3 diffuseColor = diffuse * color_array[pixelSelect];
 				glm::vec3 specularColor = glm::vec3(0.0f);
 				finalColor = ambientColor + diffuseColor + specularColor;
-				image[x][y] = finalColor;
+
+
+				image[x][y] = finalColor; // Writes Color Values to Pixel.
 				PutPixel32_nolock(screenSurface, x, y, convertColour(image[x][y]));
 			}
 		}
@@ -310,7 +301,5 @@ int main(int argc, char* args[])
 	}
 
 	closeSDL(window);
-
 	return 0;
-	
 }

@@ -1,0 +1,24 @@
+
+In this file you will See all of the References used to make this Engine Happen
+
+The File introduces a like and brief description of what was included in it.
+
+
+- REFERENCE LIST -
+https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/mathematics-of-shading/mathematics-of-shading.html Shading
+https://graphics.stanford.edu/courses/cs148-10-summer/as3/instructions/as3.pdf Phong Shading RTeflectance Model.
+http://repo.darmajaya.ac.id/4242/1/Fundamentals%20of%20Computer%20Graphics%2C%20Fourth%20Edition%20%28%20PDFDrive%20%29.pdf Shading v2.
+https://cglearn.codelight.eu/pub/computer-graphics/shading-and-lighting Shading / Lighting Mathematics.
+https://graphics.stanford.edu/courses/cs148-10-summer/as3/instructions/as3.pdf Shading/ raytracing Lighting
+https://raytracing.github.io/books/RayTracingInOneWeekend.html#addingasphere/creatingourfirstraytracedimage Ray Tracing Image ( Never got Implemeneted )
+https://pellacini.di.uniroma1.it/teaching/graphics06/lectures/03_RayTracing_Web.pdf Lighting, emmisions geometry, Light sources.
+
+https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/definition-ray.html Ray Definition ( t , tMin, Tmax )
+https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html Camera Rays / Intersections
+
+https://www.ibm.com/docs/en/zvm/7.2?topic=arithmetic-exponential-notation Exponential Notation
+http://freesourcecode.net/cprojects/109969/sourcecode/stdafx.h#.Y_LbcmnP3b2 Stdafx.h Library Setup For Pre-complied Libraries.
+
+https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection.html Minimal Ray Tracer shapes Sphere, cube, plane etc.
+https://github.com/chicio/Ray-tracing Ray Tracing Github project from someone.
+
