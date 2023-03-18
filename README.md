@@ -19,3 +19,13 @@ Buttons within the Game:
 The Final Project Submission / Build can be found under
 - Release
 - Download the Setup file, which creates an applicaiton at your desired location and you can load up the project.
+
+- Zip file -> 
+- Msi 
+- exe file 
+- Open the msi file
+- Start download 
+- Place in desired location
+- Creates a shortcut and press on shortcut to use it!
+
+Hope you Enjoy, if that does not work, Look for the zip file from the project directory. :)
