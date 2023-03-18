@@ -14,3 +14,8 @@ Buttons within the Game:
 
 - Esc - to close the program.
 - 
+
+
+The Final Project Submission / Build can be found under
+- Release
+- Download the Setup file, which creates an applicaiton at your desired location and you can load up the project.
