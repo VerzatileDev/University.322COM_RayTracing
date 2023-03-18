@@ -14,8 +14,8 @@ Sphere sphereOne(4, glm::vec3(0, 0, -20), glm::vec3(1.00, 0.32, 0.36));
 Sphere sphereTwo(2, glm::vec3(5, -1, -15), glm::vec3(0.90, 0.76, 0.46)); // Yellow Sphere
 Sphere sphereThree(3, glm::vec3(5, 0, -25), glm::vec3(0.65, 0.77, 0.97)); // Light Blue
 Sphere sphereFour(3, glm::vec3(-5.5, 0, -15), glm::vec3(0.90, 0.90, 0.90)); // Light gray
-Plane plane(glm::vec3(0, -10004, -20), glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.0, 1.0, 0.0)); // Gray Floor
-Triangle triangle(glm::vec3(0.9, 1.0, 0.2), glm::vec3(0, 1, -2), glm::vec3(-1.9, -1, -2), glm::vec3(1.6, -0.5, -2)); // Color, point1, p2, p3
+Plane plane(glm::vec3(0, -10004, -20), glm::vec3(0.2, 0.2, 0.2), glm::vec3(0.0, 1.0, 0.0)); // Gray Floor             Normal 1
+Triangle triangle(glm::vec3(0.9, 1.0, 0.2), glm::vec3(0, 1, -2), glm::vec3(-1.9, -1, -2), glm::vec3(1.6, -0.5, -2), glm::vec3(0.0, 0.6, 1.0), glm::vec3(0.0, 0.6, 1.0), glm::vec3(0.4, -0.4, 1.0)); // Color, point1, p2, p3
 
 #pragma endregion
 
@@ -117,14 +117,20 @@ int main(int argc, char* args[])
 #pragma region SDL Setup
 	SDL_Window* window = NULL;
 	SDL_Surface* screenSurface = NULL;
-	if (!initSDL(window, screenSurface)) return -1;
-
+	if (!initSDL(window, screenSurface))
+	{
+		std::cout << " Failed To Initialize SDL Window " << std::endl;
+		return -1;
+	}
+	
 	// Store/ create Image into memory.
 	glm::vec3** image = new glm::vec3 * [WIDTH];
 	for (int i = 0; i < WIDTH; i++)
 	{
 		image[i] = new glm::vec3[HEIGHT];
 	}
+	std::cout << " The Application Dimensions are " << WIDTH << " By " << HEIGHT << std::endl;
+	std::cout << " Press ' Esc ' to Close " << std::endl;
 #pragma endregion
 
 #pragma region Data storage
@@ -136,6 +142,9 @@ int main(int argc, char* args[])
 	glm::vec3 rayOrigin(0, 0, 20); // Camera Location
 	std::vector<float> t_arr;
 	std::vector<glm::vec3> color_array;
+	std::vector<glm::vec3> IntPt_array;
+	std::vector<glm::vec3> CenPT_array;
+	glm::vec3 tempPos;
 
 	// Properties for the Image Background
 	glm::vec3 upper_left_corner(2.0, 1.0, 1.0);
@@ -144,20 +153,24 @@ int main(int argc, char* args[])
 	glm::vec3 pointB;
 	glm::vec3 pointBColor;
 
+	// Shading Properties I guess
+	glm::vec3 tNormvec, IntPt;
+	float ColValue;
+	float ambientIntesity(0.1);
+	glm::vec3 lightPt(0.0f, 20.0f, 0.0f);
+	glm::vec3 finalColor(1.0f, 1.0f, 1.0f);
 #pragma endregion
 
 #pragma region Virtual Method Intances
-	Shape* ShapeSphere;
 	Sphere newSphereShape;
-	ShapeSphere = &newSphereShape;
-
-	Shape* ShapePlane;
 	Plane newPlaneShape;
-	ShapePlane = &newPlaneShape;
-
-	Shape* ShapeTriangle;
 	Triangle newTriangleShape;
-	ShapeTriangle = &newTriangleShape;
+
+	Shape* shapes[3];
+	shapes[0] = &newSphereShape;
+	shapes[1] = &newPlaneShape;
+	shapes[2] = &newTriangleShape;
+
 #pragma endregion
 
 	for (int y = 0; y < HEIGHT; ++y)
@@ -185,58 +198,64 @@ int main(int argc, char* args[])
 			rayDirection = glm::normalize(glm::vec3(PCameraX, PCameraY, -1.0f));
 			
 			/* ! INTERSECTIONS ! */
-			if (ShapeSphere->IntersectionOfSphere(sphereOne.GetPosition(), sphereOne.GetRadius(), rayOrigin, rayDirection, t))
+			if (shapes[0]->IntersectionOfSphere(sphereOne.GetPosition(), sphereOne.GetRadius(), rayOrigin, rayDirection, t, IntPt))
 			{
 				t_arr.push_back(t);
-					color_array.push_back(sphereOne.GetColor());
+				//ShapeSphere->ComputeColor(ambientIntesity, IntPt, lightPt, rayDirection, ColValue);
+				IntPt_array.push_back(IntPt);
+				CenPT_array.push_back(sphereOne.GetPosition());
+				color_array.push_back(sphereOne.GetColor());
 			}
-
-			if (ShapeSphere->IntersectionOfSphere(sphereTwo.GetPosition(), sphereTwo.GetRadius(), rayOrigin, rayDirection, t))
+			if (shapes[0]->IntersectionOfSphere(sphereTwo.GetPosition(), sphereTwo.GetRadius(), rayOrigin, rayDirection, t, IntPt))
 			{
 				t_arr.push_back(t);
+				IntPt_array.push_back(IntPt);
+				CenPT_array.push_back(sphereTwo.GetPosition());
 				color_array.push_back(sphereTwo.GetColor());
 			}
-
-			if (ShapeSphere->IntersectionOfSphere(sphereThree.GetPosition(), sphereFour.GetRadius(), rayOrigin, rayDirection, t))
+			if (shapes[0]->IntersectionOfSphere(sphereThree.GetPosition(), sphereThree.GetRadius(), rayOrigin, rayDirection, t, IntPt))
 			{
 				t_arr.push_back(t);
+				IntPt_array.push_back(IntPt);
+				CenPT_array.push_back(sphereThree.GetPosition());
 				color_array.push_back(sphereThree.GetColor());
 			}
-
-			if (ShapeSphere->IntersectionOfSphere(sphereFour.GetPosition(), sphereFour.GetRadius(), rayOrigin, rayDirection, t))
+			if (shapes[0]->IntersectionOfSphere(sphereFour.GetPosition(), sphereFour.GetRadius(), rayOrigin, rayDirection, t, IntPt))
 			{
 				t_arr.push_back(t);
+				IntPt_array.push_back(IntPt);
+				CenPT_array.push_back(sphereFour.GetPosition());
 				color_array.push_back(sphereFour.GetColor());
 			}
 			
-			if (ShapePlane->IntersectionOfPlane(plane.getCenter(), rayOrigin, rayDirection, plane.getNormal(), t))
-			{
-				t_arr.push_back(t);
-				color_array.push_back(plane.getColor());
-			}
-			
-
+			//if (ShapePlane->IntersectionOfPlane(plane.getCenter(), rayOrigin, rayDirection, plane.getNormal(), t))
+			//{
+			//	t_arr.push_back(t);
+			//	color_array.push_back(plane.getColor());
+			//}
+		
 			// Do not Give vertexpoints values under 0 or over 2 :D Kills PC!
-			if (ShapeTriangle->IntersectionOfTriangle(rayDirection, rayOrigin, triangle.GetVertexPoint(0), triangle.GetVertexPoint(1), triangle.GetVertexPoint(2), t))
-			{
-				t_arr.push_back(t);
-				color_array.push_back(triangle.GetColor());
-			}
+			//if (ShapeTriangle->IntersectionOfTriangle(rayDirection, rayOrigin, triangle.GetVertexPoint(0), triangle.GetVertexPoint(1), triangle.GetVertexPoint(2), t, IntPt, tNormvec))
+			//{
+			//	t_arr.push_back(t);
+				
+				//ShapeTriangle->ComputeTriangleColor(ambientIntesity, IntPt, lightPt, rayDirection, tNormvec, ColValue);
+			//	IntPt_array.push_back(IntPt);
+			//	color_array.push_back(triangle.GetColor());
+			//}
 
 			
-			// Better Background
-			// This Takes the Dimensions of the Screen and where The defined corners are
-			// and calculates the colours of each corner and how they should be displayed for Background
+#pragma region Background Specificaitons
+			// Based on the Direction, define the color
 			pointB = upper_left_corner + NormalizedPixelx * horizontal + NormalizedPixely * vertical;
-			float temporary = 0.5 * (pointB.y + 1.0);
+			float temporary = 0.9 * (pointB.y + 1.0);
 			float temporary1 = 1.0 - temporary;
 			pointBColor = temporary1 * glm::vec3(1.0, 1.0, 1.0) + temporary * glm::vec3(0.5, 0.7, 1.0);
-
+#pragma endregion
 
 			/* ! COLOUR DEFINITIONS !*/
 			if (t_arr.size() == 0)
 			{
-				// Purple
 				// Background
 				image[x][y].x = 1.0 * pointBColor.x;
 				image[x][y].y = 1.0 * pointBColor.y;
@@ -249,16 +268,34 @@ int main(int argc, char* args[])
 				pixelSelect = 0;
 				for (int i = 0; i < t_arr.size(); i++)
 				{
-					if (t_arr[i] < min_t) { pixelSelect = i; min_t = t_arr[i]; }
+					if (t_arr[i] < min_t) 
+					{
+						pixelSelect = i;
+						//std::cout << t_arr.size() << std::endl;
+						min_t = t_arr[i]; 
+					}
 				}
-				image[x][y].x = color_array[pixelSelect].x;
-				image[x][y].y = color_array[pixelSelect].y;
-				image[x][y].z = color_array[pixelSelect].z;
+				//std::cout << pixelSelect << std::endl;
+				
+				//IntPt = IntPt_array[pixelSelect];
+				//tempPos = CenPT_array[pixelSelect];
+				
+				
+				glm::vec3 IntPt = rayOrigin + min_t * rayDirection;
+				glm::vec3 normal = glm::normalize(IntPt - sphereOne.GetPosition());
+				glm::vec3 lightDirection = glm::normalize(lightPt - IntPt);
+				float diffuse = glm::max(glm::dot(normal, lightDirection), 0.0f);
+				glm::vec3 ambientIntesity(0.1, 0.1, 0.1);
+
+				glm::vec3 ambientColor = ambientIntesity * color_array[pixelSelect];
+				glm::vec3 diffuseColor = diffuse * color_array[pixelSelect];
+				glm::vec3 specularColor = glm::vec3(0.0f);
+				finalColor = ambientColor + diffuseColor + specularColor;
+				image[x][y] = finalColor;
 				PutPixel32_nolock(screenSurface, x, y, convertColour(image[x][y]));
 			}
 		}
 	}
-	
 	SDL_UpdateWindowSurface(window);
 	bool quit = false;
 	while (!quit)
@@ -275,4 +312,5 @@ int main(int argc, char* args[])
 	closeSDL(window);
 
 	return 0;
+	
 }

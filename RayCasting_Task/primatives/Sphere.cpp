@@ -14,13 +14,13 @@ Sphere::Sphere(float Radius, glm::vec3 CenterPosition, glm::vec3 Color)
 Sphere::~Sphere()
 {}
 
-bool Sphere::IntersectionOfSphere(glm::vec3 center,float radius , glm::vec3 origin, glm::vec3 direction, float& t)
+bool Sphere::IntersectionOfSphere(glm::vec3 center,float radius , glm::vec3 origin, glm::vec3 direction, float& t, glm::vec3& IntPt)
 {
 	float t0, t1; // t If Ray Intersects to the pixel.
 
 	glm::vec3 length = center - origin;
 	float tca = dot(length, direction);
-
+	
 	if (tca < 0) return false;
 
 	float d = dot(length, length) - tca * tca;
@@ -39,8 +39,29 @@ bool Sphere::IntersectionOfSphere(glm::vec3 center,float radius , glm::vec3 orig
 	}
 
 	t = t0;
-
+	IntPt = origin + t * direction;
 	return true;
+}
+
+void Sphere::ComputeColor(const float ambientIntensity, const glm::vec3 IntPt, const glm::vec3 lightPt, const glm::vec3 rayDirection, float& ColValue)
+{
+	glm::vec3 lightToPt, reflectLigt, surNorm;
+	float Ca, Cd, Cs, tt;
+	lightToPt = glm::normalize(lightPt - IntPt);
+	surNorm = glm::normalize(IntPt - cen);
+
+	reflectLigt = 2 * (glm::dot(lightToPt, surNorm)) * surNorm - lightToPt;
+	Ca = ambientIntensity;
+	Cd = glm::max(0.0, (double)glm::dot(lightToPt, surNorm));
+
+	tt = glm::max(0.0, (double)glm::dot(reflectLigt, -rayDirection));
+	Cs = glm::pow(tt, 50) * 0.7;
+
+	ColValue = Ca + Cd + Cs;
+	if (ColValue > 0.0)
+	{
+		ColValue = 1.0;
+	}
 }
 
 #pragma region GetValue Data
