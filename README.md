@@ -1,4 +1,4 @@
-# 9032499_322COM_Task1_Defferal
+# 322COM_Task1
 ## RayTracing 322COM
 
 <br>
@@ -27,7 +27,7 @@ pixel and instead run a function that would display a background picture.
 ## The Final Project Submission / Build can be downloaded from:
 
 
-- [Realeases Download Exe](https://github.coventry.ac.uk/lattb/9032499_322COM_Task1_Defferal/releases/tag/Final_Build)
+- [Realeases Download Exe](https://github.com/VerzatileDev/322COM_RayTracing/releases/tag/Final_Build)
 
 
 <br>
